@@ -375,6 +375,7 @@ async def start_(client: anibot, message: Message, mdata: dict):
                 k = await AUTH_USERS.find_one({'_id': ObjectId(qry)})
                 await code_cmd(k['code'], message)
                 return
+        await client.send_photo(gid,"https://telegra.ph/file/820a360366fe497b0afc3.jpg", caption = "hi")
         await client.send_message(
             gid,
             text=f"""Konichiwa 😘
