@@ -376,24 +376,6 @@ async def start_(client: anibot, message: Message, mdata: dict):
                 await code_cmd(k['code'], message)
                 return
         await client.send_photo(gid,"https://telegra.ph/file/820a360366fe497b0afc3.jpg", caption = "hi")
-        await client.send_message(
-            gid,
-            text=f"""Konichiwa 😘
-❣ I'm {bot.first_name} bot ❣
-
-🤍I can help you get info on🤍
-❤Animes,
-🧡Mangas,
-💛Characters,
-💚Airings,
-💙Schedules,
-💜Watch Orders of Animes, etc
-
-🔰For more info send /help in here.
-🌐If you wish to use me in a group start me by /start{BOT_NAME} command after adding me in the group and promote me as an Admin.
-[❌](https://telegra.ph/file/820a360366fe497b0afc3.jpg) Made by @tr0j3n and @Peaceful_Wolf_016"""
-        )
-    else:
         if not await (GROUPS.find_one({"id": gid})):
             try:
                 gidtitle = mdata['chat']['username']
