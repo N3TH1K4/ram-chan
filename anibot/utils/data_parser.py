@@ -14,12 +14,17 @@ ANIME_DB, MANGA_DB, CHAR_DB = {}, {}, {}
 ANIME_TEMPLATE = """{name}
 
 **ID | MAL ID:** `{idm}` | `{idmal}`
-**SYNONYMS:** `{synon}`
-➤ **SOURCE:** `{source}`
-➤ **TYPE:** `{formats}`{avscd}{dura}{user_data}
-➤ **AIRING DATE:** `{airdate}`
-➤ **ADULT RATED:** `{adult}`
+⤜ **SYNONYMS:** `{synon}`
+⤜ **SOURCE:** `{source}`
+⤜ **TYPE:** `{formats}`{avscd}{dura}{user_data}
+⤜ **START DATE:** `{airdate}`
+⤜ **END DATE:** `{enddate}`
+⤜ **SEASON:** `{seas}`
+⤜ **IS LICENSED:** `{lice}`
+⤜ **ADULT RATED:** `{adult}`
+⤜ **POPULARITY:** {popp}
 {status_air}{gnrs_}{tags_}
+{hassh}
 
 🎬 {trailer_link}
 📖 <a href="{surl}">Synopsis</a>
@@ -808,23 +813,42 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
     c_flag = cflag(country)
+    endyr= data['endDate']['year']
+    endmonth = data['endDate']['month']
+    endday = data['endDate']['day']
+    enddate = f"{endyr}.{endmonth}.{endday}"
+    seas= data['season']
+    hassh= data['hashtag']
+    lice = json['isLicensed']
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     url = data.get("siteUrl")
     banner = data.get("bannerImage")
     trailer_link = "N/A"
+    popp = json['popularity']
+    popp = f"`{popp}` Anilist Users have This Anime In Their Lists"
     gnrs = ", ".join(data['genres'])
     score = data['averageScore']
-    avscd = f"\n➤ **SCORE:** `{score}%` 🌟" if score is not None else ""
+    avscd = f"\n⤜ **SCORE:** `{score}%` 🌟" if score is not None else ""
     tags = []
     for i in data['tags']:
         tags.append(i["name"])
-    tags_ = f"\n➤ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
+    tags_ = f"\n⤜ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
     bot = BOT_NAME.replace("@", "")
+    if endmonth and endday == None:
+       enddate = f"The year This Anime finished was {endyr}"
+    elif endyr == None:
+       enddate = "Its Not Even Started"
+    else:
+       enddate =enddate
+    if lice == True:
+        lice = "A licensed Work"
+    else:
+        lice = "Not licensed"
     gnrs_ = ""
     if len(gnrs)!=0:
-        gnrs_ = f"\n➤ **GENRES:** `{gnrs}`"
+        gnrs_ = f"\n⤜ **GENRES:** `{gnrs}`"
     isfav = data.get("isFavourite")
     fav = ", in Favourites" if isfav is True else ""
     user_data = ""
@@ -837,7 +861,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
             in_ls_id = in_list['id']
             in_ls_stts = in_list['status']
             in_ls_score = f" and scored {in_list['score']}" if in_list['score']!=0 else ""
-            user_data = f"\n➤ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
+            user_data = f"\n⤜ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
     if data["title"]["english"] is not None:
         name = f"""[{c_flag}]**{romaji}**
         __{english}__
@@ -877,7 +901,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
 		
     surl = f"https://t.me/{bot}/?start=des_ANI_{idm}"
     dura = (
-        f"\n➤ **DURATION:** `{duration} min/ep`"
+        f"\n⤜ **DURATION:** `{duration} min/ep`"
         if duration is not None
         else ""
     )
@@ -890,9 +914,9 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
         air_on += f" | {eps}{th} eps"
     if air_on  is None:
         eps_ = f"` | `{episodes} eps" if episodes is not None else ""
-        status_air = f"➤ **STATUS:** `{status}{eps_}`"
+        status_air = f"⤜ **STATUS:** `{status}{eps_}`"
     else:
-        status_air = f"➤ **STATUS:** `{status}`\n➤ **NEXT AIRING:** `{air_on}`"
+        status_air = f"⤜ **STATUS:** `{status}`\n⤜ **NEXT AIRING:** `{air_on}`"
     if data["trailer"] and data["trailer"]["site"] == "youtube":
         trailer_link = f"<a href='https://youtu.be/{data['trailer']['id']}'>Trailer</a>"
     title_img = f"https://img.anili.st/media/{idm}"
