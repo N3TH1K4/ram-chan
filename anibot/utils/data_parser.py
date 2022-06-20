@@ -776,8 +776,8 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
     elif req == "banner":
-		banner = data['bannerImage']
-		return (banner if ctgry == "ANI" else data['coverImage']['extraLarge'], noban
+	banner = data.get('bannerImage'])
+	return (banner if ctgry == "ANI" else data['coverImage']['extraLarge'], noban
     elif req == "char":
         charlist = []
         for char in data["characters"]['edges']:
@@ -785,6 +785,9 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         chrctrs = ("\n").join(charlist)
         charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
         return pic, charls, data["characters"]['pageInfo']
+    elif req == "banner":
+	banner = data.get('bannerImage'])
+	return (banner if ctgry == "ANI" else data['coverImage']['extraLarge'], noban		
     else:
         prqlsql = data.get("relations").get("edges")
         ps = ""
