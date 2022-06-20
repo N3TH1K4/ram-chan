@@ -18,7 +18,7 @@ ANIME_TEMPLATE = """{name}
 ➤ **TYPE:** `{formats}`{avscd}{dura}{user_data}
 ➤ **ADULT RATED:** `{adult}`
 {status_air}{gnrs_}{tags_}
-
+{banner_img}
 🎬 {trailer_link}
 📖 <a href="{surl}">Synopsis</a>
 📖 <a href="{url}">Official Site</a>
