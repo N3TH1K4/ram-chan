@@ -23,7 +23,7 @@ DC = get_collection('DISABLED_CMDS')
 
 TRACE_MOE = {}
 
-@anibot.on_message(filters.command(["reverse", f"reverse{BOT_NAME}"], prefixes=trg))
+@anibot.on_message(filters.command(["areverse", f"areverse{BOT_NAME}"], prefixes=trg))
 @control_user
 async def trace_bek(client: anibot, message: Message, mdata: dict):
     """ Reverse Search Anime Clips/Photos """
