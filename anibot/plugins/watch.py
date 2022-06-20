@@ -11,7 +11,7 @@ from ..utils.db import get_collection
 DC = get_collection('DISABLED_CMDS')
 
 
-@anibot.on_message(filters.command(["watch", f"watch{BOT_NAME}"], prefixes=trg))
+@anibot.on_message(filters.command(["watchorder", f"watchorder{BOT_NAME}"], prefixes=trg))
 @control_user
 async def get_watch_order(client: anibot, message: Message, mdata: dict):
     """Get List of Scheduled Anime"""
