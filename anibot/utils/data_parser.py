@@ -27,56 +27,115 @@ ANIME_TEMPLATE = """{name}
 
 # GraphQL Queries.
 ANIME_QUERY = """
-query ($id: Int, $idMal:Int, $search: String) {
-  Media (id: $id, idMal: $idMal, search: $search, type: ANIME) {
-    id
-    idMal
-    title {
-      romaji
-      english
-      native
-    }
-    format
-    status
-    episodes
-    duration
-    countryOfOrigin
-    source (version: 2)
-    trailer {
-      id
-      site
-    }
-    genres
-    tags {
-      name
-    }
-    averageScore
-    relations {
-      edges {
-        node {
-          title {
-            romaji
-            english
-          }
-          id
+query ($id: Int, $idMal:Int, $search: String) { 
+      Media (id: $id, idMal: $idMal, search: $search, type: ANIME) { 
+        id
+        idMal
+        title {
+          romaji
+          english
+          native
         }
-        relationType
+        description (asHtml: false)
+        source (version: 2)
+        startDate{
+            year
+            month
+            day
+          }
+        endDate{
+            year
+            month
+            day
+            }
+          tags {
+           name}
+          episodes
+          isLicensed
+          recommendations(page:$page, perPage:10, sort:RATING_DESC,){
+            pageInfo {
+                lastPage
+                total}
+            edges{
+                node{
+                    mediaRecommendation{title{romaji}
+                    coverImage{
+              extraLarge}
+              siteUrl
+              averageScore
+                    id}
+                    rating
+                }}
+          }
+          isAdult
+          popularity
+          source
+          externalLinks{
+              type
+              url
+              site
+              language
+              icon
+              isDisabled
+              }
+          season
+          type
+          format
+          status
+          countryOfOrigin
+          duration
+          hashtag
+          siteUrl
+          studios{
+              nodes{
+                   name
+              }
+          }
+          nextAiringEpisode {
+              timeUntilAiring
+              episode
+          }
+          trailer{
+               id
+               site 
+               thumbnail
+          }
+          averageScore
+          genres
+          synonyms
+          relations{
+            edges{
+                relationType
+                node{
+                    title{romaji
+                    english}
+                    id}
+                    }
+          }
+          bannerImage
+          isFavourite
+          mediaListEntry {
+              status
+              score
+              id
+            }
+          coverImage{
+              extraLarge}
+          characters(page: $page, perPage: 25,sort:ROLE){
+                pageInfo {
+                    lastPage
+                    total
+              }
+              edges{
+                  node{
+                    name{full}
+                      }
+                  role
+                  }
+                }
+                  
       }
     }
-    nextAiringEpisode {
-      timeUntilAiring
-      episode
-    }
-    isAdult
-    isFavourite
-    mediaListEntry {
-      status
-      score
-      id
-    }
-    siteUrl
-  }
-}
 """
 
 ISADULT = """
@@ -356,51 +415,110 @@ query ($search: String, $page: Int) {
       total
     }
     media (search: $search, type: ANIME) {
-      id
-      idMal
-      title {
-        romaji
-        english
-        native
-      }
-      format
-      status
-      episodes
-      duration
-      countryOfOrigin
-      source (version: 2)
-      trailer {
-        id
-        site
-      }
-      genres
-      tags {
-        name
-      }
-      averageScore
-      relations {
-        edges {
-          node {
-            title {
-              romaji
-              english
-            }
-          }
-          relationType
-          }
+id
+        idMal
+        title {
+          romaji
+          english
+          native
         }
-      nextAiringEpisode {
-        timeUntilAiring
-        episode
-      }
-      isAdult
-      isFavourite
-      mediaListEntry {
-        status
-        score
-        id
-      }
-      siteUrl
+        description (asHtml: false)
+        source (version: 2)
+        startDate{
+            year
+            month
+            day
+          }
+        endDate{
+            year
+            month
+            day
+            }
+          tags {
+           name}
+          episodes
+          isLicensed
+          recommendations(page:$page, perPage:10, sort:RATING_DESC,){
+            pageInfo {
+                lastPage
+                total}
+            edges{
+                node{
+                    mediaRecommendation{title{romaji}
+                    coverImage{
+              extraLarge}
+              siteUrl
+              averageScore
+                    id}
+                    rating
+                }}
+          }
+          isAdult
+          popularity
+          source
+          externalLinks{
+              type
+              url
+              site
+              language
+              icon
+              isDisabled
+              }
+          season
+          type
+          format
+          status
+          countryOfOrigin
+          duration
+          hashtag
+          siteUrl
+          studios{
+              nodes{
+                   name
+              }
+          }
+          nextAiringEpisode {
+              timeUntilAiring
+              episode
+          }
+          trailer{
+               id
+               site 
+               thumbnail
+          }
+          averageScore
+          genres
+          synonyms
+          relations{
+            edges{
+                relationType
+                node{
+                    title{romaji
+                    english}
+                    id}
+                    }
+          }
+          bannerImage
+          isFavourite
+          mediaListEntry {
+              status
+              score
+              id
+            }
+          coverImage{
+              extraLarge}
+          characters(page: $page, perPage: 25,sort:ROLE){
+                pageInfo {
+                    lastPage
+                    total
+              }
+              edges{
+                  node{
+                    name{full}
+                      }
+                  role
+                  }
+                }
     }
   }
 }
