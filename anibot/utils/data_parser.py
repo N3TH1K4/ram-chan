@@ -18,7 +18,8 @@ ANIME_TEMPLATE = """{name}
 ➤ **TYPE:** `{formats}`{avscd}{dura}{user_data}
 ➤ **ADULT RATED:** `{adult}`
 {status_air}{gnrs_}{tags_}
-{banner_img}
+{banner}
+{url}
 🎬 {trailer_link}
 📖 <a href="{surl}">Synopsis</a>
 📖 <a href="{url}">Official Site</a>
@@ -844,7 +845,6 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
         else ""
     )
     air_on = None
-    banner_img = f"[Banner]({banner})"
     if data["nextAiringEpisode"]:
         nextAir = data["nextAiringEpisode"]["timeUntilAiring"]
         air_on = make_it_rw(nextAir*1000)
