@@ -899,7 +899,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     else:
          airdate = airdate
 		
-    surl = f"https://t.me/{bot}/?start=des_ANI_{idm}"
+    surl = f"https://t.me/{bot}/?start=desc_ANI_{idm}"
     dura = (
         f"\n⤜ **DURATION:** `{duration} min/ep`"
         if duration is not None
