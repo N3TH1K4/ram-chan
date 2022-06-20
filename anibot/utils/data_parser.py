@@ -501,6 +501,7 @@ query ($id: Int) {
       large
     }
     description(asHtml: false)
+    bannerImage
   }
 }
 """
@@ -766,7 +767,7 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         vars_,
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
-    pic = f"https://img.anili.st/media/{idm}"
+    pic = f"{data['bannerImage']}"
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
