@@ -337,6 +337,8 @@ query ($id: Int) {
     id
     description (asHtml: false)
     bannerImage
+    coverImage{
+              extraLarge}
   }
 }
 """
@@ -502,7 +504,6 @@ query ($id: Int) {
       large
     }
     description(asHtml: false)
-    bannerImage
   }
 }
 """
@@ -768,10 +769,17 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         vars_,
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
-    pic = f"{data['bannerImage']}"
+    noban = "**No Banner Image**"
+    pic = f"https://img.anili.st/media/{idm}"
+    banner = data['bannerImage']
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
+    elif req == "banner":
+		if data['bannerImage'] == None:
+			return noban
+		else:
+			return (banner if ctgry == "ANI" else data['coverImage']['extraLarge']
     elif req == "char":
         charlist = []
         for char in data["characters"]['edges']:
