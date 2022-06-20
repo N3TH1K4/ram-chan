@@ -336,6 +336,7 @@ query ($id: Int) {
   Media (id: $id) {
     id
     description (asHtml: false)
+    bannerImage
   }
 }
 """
