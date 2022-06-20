@@ -819,14 +819,14 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     enddate = f"{endyr}.{endmonth}.{endday}"
     seas= data['season']
     hassh= data['hashtag']
-    lice = json['isLicensed']
+    lice = data['isLicensed']
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     url = data.get("siteUrl")
     banner = data.get("bannerImage")
     trailer_link = "N/A"
-    popp = json['popularity']
+    popp = data['popularity']
     popp = f"`{popp}` Anilist Users have This Anime In Their Lists"
     gnrs = ", ".join(data['genres'])
     score = data['averageScore']
