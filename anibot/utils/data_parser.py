@@ -844,6 +844,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
         else ""
     )
     air_on = None
+    banner_img = f"[Banner]({banner})"
     if data["nextAiringEpisode"]:
         nextAir = data["nextAiringEpisode"]["timeUntilAiring"]
         air_on = make_it_rw(nextAir*1000)
