@@ -41,7 +41,7 @@ no_pic = [
 ]
 
 
-@anibot.on_message(filters.command(["anime", f"anime{BOT_NAME}"], prefixes=trg))
+@anibot.on_message(filters.command(["anilist", f"anilist{BOT_NAME}"], prefixes=trg))
 @control_user
 async def anime_cmd(client: anibot, message: Message, mdata: dict):
     """Search Anime Info"""
@@ -167,7 +167,7 @@ async def character_cmd(client: anibot, message: Message, mdata: dict):
     await client.send_photo(gid, img, caption=cap_text, reply_markup=buttons)
 
 
-@anibot.on_message(filters.command(["anilist", f"anilist{BOT_NAME}"], prefixes=trg))
+@anibot.on_message(filters.command(["anime", f"anime{BOT_NAME}"], prefixes=trg))
 @control_user
 async def anilist_cmd(client: anibot, message: Message, mdata: dict):
     text = mdata['text'].split(" ", 1)
