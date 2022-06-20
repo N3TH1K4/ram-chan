@@ -782,6 +782,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     url = data.get("siteUrl")
+    banner = data.get("bannerImage")
     trailer_link = "N/A"
     gnrs = ", ".join(data['genres'])
     score = data['averageScore']
@@ -890,6 +891,7 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     trailer_link = "N/A"
+    banner = data.get("bannerImage")
     isfav = data.get("isFavourite")
     gnrs = ", ".join(data['genres'])
     gnrs_ = ""
