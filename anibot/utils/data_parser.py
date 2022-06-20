@@ -37,6 +37,7 @@ query ($id: Int, $idMal:Int, $search: String) {
       native
     }
     format
+    bannerImage
     status
     episodes
     duration
