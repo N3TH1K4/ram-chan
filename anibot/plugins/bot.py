@@ -332,7 +332,7 @@ async def db_cleanup(client: anibot, message: Message, mdata: dict):
     await x.edit_text(msg)
 
 
-@anibot.on_message(filters.command(['start', f'start{BOT_NAME}'], prefixes=trg))
+@anibot.on_message(filters.command(['anistart', f'anistart{BOT_NAME}'], prefixes=trg))
 @control_user
 async def start_(client: anibot, message: Message, mdata: dict):
     gid = mdata['chat']['id']
@@ -375,7 +375,6 @@ async def start_(client: anibot, message: Message, mdata: dict):
                 k = await AUTH_USERS.find_one({'_id': ObjectId(qry)})
                 await code_cmd(k['code'], message)
                 return
-        await client.send_photo(gid,"https://telegra.ph/file/820a360366fe497b0afc3.jpg", caption = "hi")
         if not await (GROUPS.find_one({"id": gid})):
             try:
                 gidtitle = mdata['chat']['username']
@@ -386,7 +385,7 @@ async def start_(client: anibot, message: Message, mdata: dict):
         await client.send_message(gid, text="Bot seems online!!!")
 
 
-@anibot.on_message(filters.command(['help', f'help{BOT_NAME}'], prefixes=trg))
+@anibot.on_message(filters.command(['anihelp', f'anihelp{BOT_NAME}'], prefixes=trg))
 @control_user
 async def help_(client: anibot, message: Message, mdata: dict):
     gid = mdata['chat']['id']
@@ -504,7 +503,7 @@ Stats:-
     )
 
 
-@anibot.on_message(filters.command(['ping', f'ping{BOT_NAME}'], prefixes=trg))
+@anibot.on_message(filters.command(['aniping', f'aniping{BOT_NAME}'], prefixes=trg))
 @control_user
 async def pong_(client: anibot, message: Message, mdata: dict):
     find_gc = await DC.find_one({'_id': mdata['chat']['id']})
