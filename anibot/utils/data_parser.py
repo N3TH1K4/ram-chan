@@ -751,46 +751,46 @@ async def get_featured_in_lists(idm, req, auth: bool = False, user: int = None, 
 
 
 async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = None, page: int = 0):
-	    vars_ = {"id": int(idm)}
-	    if req=='char':
-		vars_['page'] = page
-	    result = await return_json_senpai(
-		(
-		    (
-			DES_INFO_QUERY
-			if req == "desc"
-			else CHA_INFO_QUERY
-			if req == "char"
-			else REL_INFO_QUERY
-		    )
-		    if ctgry == "ANI"
-		    else DESC_INFO_QUERY
-		),
-		vars_,
+    vars_ = {"id": int(idm)}
+    if req=='char':
+	vars_['page'] = page
+    result = await return_json_senpai(
+	(
+	    (
+		DES_INFO_QUERY
+		if req == "desc"
+		else CHA_INFO_QUERY
+		if req == "char"
+		else REL_INFO_QUERY
 	    )
-	    data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
-	    noban = "**No Banner Image**"
-	    pic = f"https://img.anili.st/media/{idm}"
-	    banner = data['bannerImage']
-	    if req == "desc":
-			synopsis = data.get("description")
-			return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
-	    elif req == "banner":
-			banner = data.get('bannerImage'])
-			return (banner if ctgry == "ANI" else data['coverImage']['extraLarge'], noban
-	    elif req == "char":
-		charlist = []
-		for char in data["characters"]['edges']:
-		    charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
-		chrctrs = ("\n").join(charlist)
-		charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
-		return pic, charls, data["characters"]['pageInfo']		
-	    else:
-		prqlsql = data.get("relations").get("edges")
-		ps = ""
-		for i in prqlsql:
-		    ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
-		return pic, ps
+	    if ctgry == "ANI"
+	    else DESC_INFO_QUERY
+	),
+	vars_,
+    )
+    data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
+    noban = "**No Banner Image**"
+    pic = f"https://img.anili.st/media/{idm}"
+    banner = data['bannerImage']
+    if req == "desc":
+	synopsis = data.get("description")
+	return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
+    #elif req == "banner":
+	#banner = data.get('bannerImage'])
+	#return (banner if ctgry == "ANI" else data['coverImage']['extraLarge'], noban
+    elif req == "char":
+	charlist = []
+	for char in data["characters"]['edges']:
+	    charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
+	chrctrs = ("\n").join(charlist)
+	charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
+	return pic, charls, data["characters"]['pageInfo']		
+    else:
+	prqlsql = data.get("relations").get("edges")
+	ps = ""
+	for i in prqlsql:
+	    ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
+	return pic, ps
 
 
 async def get_anime(vars_, auth: bool = False, user: int = None):
