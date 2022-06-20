@@ -753,7 +753,7 @@ async def get_featured_in_lists(idm, req, auth: bool = False, user: int = None, 
 async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = None, page: int = 0):
     vars_ = {"id": int(idm)}
     if req=='char':
-	vars_['page'] = page
+    vars_['page'] = page
     result = await return_json_senpai(
 	(
 	    (
