@@ -14,12 +14,13 @@ ANIME_DB, MANGA_DB, CHAR_DB = {}, {}, {}
 ANIME_TEMPLATE = """{name}
 
 **ID | MAL ID:** `{idm}` | `{idmal}`
+**SYNONYMS:** `{synon}`
 ➤ **SOURCE:** `{source}`
 ➤ **TYPE:** `{formats}`{avscd}{dura}{user_data}
+➤ **AIRING DATE:** `{airdate}`
 ➤ **ADULT RATED:** `{adult}`
 {status_air}{gnrs_}{tags_}
-{banner}
-{url}
+
 🎬 {trailer_link}
 📖 <a href="{surl}">Synopsis</a>
 📖 <a href="{url}">Official Site</a>
@@ -32,11 +33,34 @@ query ($id: Int, $idMal:Int, $search: String) {
   Media (id: $id, idMal: $idMal, search: $search, type: ANIME) {
     id
     idMal
+    synonyms
+    coverImage{
+              extraLarge}
     title {
       romaji
       english
       native
     }
+    startDate{
+            year
+            month
+            day
+          }
+	endDate{
+            year
+            month
+            day
+            }
+    
+    isLicensed
+    studios{
+              nodes{
+                   name
+              }
+          }
+    hashtag
+    season
+    popularity
     format
     bannerImage
     status
@@ -770,11 +794,16 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     # pylint: disable=possibly-unused-variable
     idm = data.get("id")
     idmal = data.get("idMal")
+    synon = data.get('synonyms')
     romaji = data["title"]["romaji"]
     english = data["title"]["english"]
     native = data["title"]["native"]
     formats = data.get("format")
     status = data.get("status")
+    syr = data['startDate']['year']	
+    smon = json['startDate']['month']
+    sday = json['startDate']['day']
+    airdate = f"{syr}.{smon}.{sday}"
     episodes = data.get("episodes")
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
@@ -838,6 +867,14 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
             sql_id = i["node"]["id"]
             break
     additional = f"{prql}{sql}"
+
+    if smon and sday == None:
+        airdate = f"Not yet relesed Year That This Anime Gonna Relese is {syr}"
+    elif syr == None:
+         airdate ="Not Yet Announced"
+    else:
+         airdate = airdate
+		
     surl = f"https://t.me/{bot}/?start=des_ANI_{idm}"
     dura = (
         f"\n➤ **DURATION:** `{duration} min/ep`"
