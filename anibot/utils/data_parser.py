@@ -750,9 +750,9 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
     pic = f"https://img.anili.st/media/{idm}"
+    banner = data.get("bannerImage")
     if req == "banner":
-		banner = data.get("bannerImage")
-	return banner
+        return banner
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
