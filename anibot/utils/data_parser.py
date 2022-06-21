@@ -754,7 +754,7 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     bannert = "Here Is The Banner"
     if req == "desc":
         synopsis = data.get("description")
-        return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
+        return (banner if ctgry == "ANI" else data["image"]["large"]), synopsis
     elif req == "banner":
         banner = data.get("bannerImage")
         print(banner)
