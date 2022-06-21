@@ -310,6 +310,16 @@ query ($id: Int) {
 }
 """
 
+BAN_QUERY = """
+query ($id: Int) {
+  Media (id: $id) {
+    id
+    description (asHtml: false)
+    bannerImage
+  }
+}
+"""
+
 CHA_INFO_QUERY = """
 query ($id: Int, $page: Int) {
   Media (id: $id, type: ANIME) {
@@ -724,11 +734,14 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     result = await return_json_senpai(
         (
             (
-                DES_INFO_QUERY
+		BAN_QUERY
+		if req == "banner"
+                else DES_INFO_QUERY
                 if req == "desc"
                 else CHA_INFO_QUERY
                 if req == "char"
                 else REL_INFO_QUERY
+		
             )
             if ctgry == "ANI"
             else DESC_INFO_QUERY
@@ -737,6 +750,9 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
     pic = f"https://img.anili.st/media/{idm}"
+    if req == "banner":
+	banner = data.get("bannerImage")
+	return banner
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
