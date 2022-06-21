@@ -733,7 +733,7 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         vars_['page'] = page
     result = await return_json_senpai(
         (
-            (
+            (	
 		BAN_QUERY
 		if req == "banner"
                 else DES_INFO_QUERY
@@ -752,11 +752,12 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     pic = f"https://img.anili.st/media/{idm}"
     banner = data.get("bannerImage")
     bannert = "Here Is The Banner"
-    if req == "banner":
-        return banner,bannert
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
+    elif req == "banner":
+        banner = data.get("bannerImage")
+        return (banner if ctgry == "ANI" else data["image"]["large"]),bannert		
     elif req == "char":
         charlist = []
         for char in data["characters"]['edges']:
