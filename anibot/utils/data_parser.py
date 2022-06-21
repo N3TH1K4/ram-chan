@@ -734,10 +734,10 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     result = await return_json_senpai(
         (
             (	
-		BAN_QUERY
-		if req == "banner"
-                else DES_INFO_QUERY
+                DES_INFO_QUERY
                 if req == "desc"
+		else BAN_QUERY
+		if req == "banner"
                 else CHA_INFO_QUERY
                 if req == "char"
                 else REL_INFO_QUERY
