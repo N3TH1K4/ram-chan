@@ -336,9 +336,6 @@ query ($id: Int) {
   Media (id: $id) {
     id
     description (asHtml: false)
-    bannerImage
-    coverImage{
-              extraLarge}
   }
 }
 """
@@ -752,21 +749,21 @@ async def get_featured_in_lists(idm, req, auth: bool = False, user: int = None, 
 
 async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = None, page: int = 0):
     vars_ = {"id": int(idm)}
-    if req=='char':	
-    	vars_['page'] = page
+    if req=='char':
+        vars_['page'] = page
     result = await return_json_senpai(
-	(
-	    (
-		DES_INFO_QUERY
-		if req == "desc"
-		else CHA_INFO_QUERY
-		if req == "char"
-		else REL_INFO_QUERY
-	    )
-	    if ctgry == "ANI"
-	    else DESC_INFO_QUERY
-	),
-	vars_,
+        (
+            (
+                DES_INFO_QUERY
+                if req == "desc"
+                else CHA_INFO_QUERY
+                if req == "char"
+                else REL_INFO_QUERY
+            )
+            if ctgry == "ANI"
+            else DESC_INFO_QUERY
+        ),
+        vars_,
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
     pic = f"https://img.anili.st/media/{idm}"
@@ -774,18 +771,18 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
     elif req == "char":
-	charlist = []
-	for char in data["characters"]['edges']:
-	    charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
-	chrctrs = ("\n").join(charlist)
-	charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
-	return pic, charls, data["characters"]['pageInfo']		
+        charlist = []
+        for char in data["characters"]['edges']:
+            charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
+        chrctrs = ("\n").join(charlist)
+        charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
+        return pic, charls, data["characters"]['pageInfo']
     else:
-	prqlsql = data.get("relations").get("edges")
-	ps = ""
-	for i in prqlsql:
-	    ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
-	return pic, ps
+        prqlsql = data.get("relations").get("edges")
+        ps = ""
+        for i in prqlsql:
+            ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
+        return pic, ps
 
 
 async def get_anime(vars_, auth: bool = False, user: int = None):
@@ -930,6 +927,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     return title_img, finals_, [idm, in_ls, in_ls_id, isfav, str(adult)], prql_id, sql_id
 
 
+
 async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     vars_ = {"search": ANIME_DB[qdb], "page": page}
     result = await return_json_senpai(PAGE_QUERY, vars_, auth=auth, user=user)
@@ -951,33 +949,11 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     episodes = data.get("episodes")
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
-    idm = data.get("id")
-    idmal = data.get("idMal")
-    synon = data.get('synonyms')
-    romaji = data["title"]["romaji"]
-    english = data["title"]["english"]
-    native = data["title"]["native"]
-    formats = data.get("format")
-    status = data.get("status")
-    syr = data['startDate']['year']	
-    smon = data['startDate']['month']
-    sday = data['startDate']['day']
-    airdate = f"{syr}.{smon}.{sday}"
-    episodes = data.get("episodes")
-    duration = data.get("duration")
-    country = data.get("countryOfOrigin")
-    c_flag = cflag(country)
-    source = data.get("source")
-    prqlsql = data.get("relations").get("edges")
-    adult = data.get("isAdult")
-    url = data.get("siteUrl")
-    banner = data.get("bannerImage")
     c_flag = cflag(country)
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     trailer_link = "N/A"
-    banner = data.get("bannerImage")
     isfav = data.get("isFavourite")
     gnrs = ", ".join(data['genres'])
     gnrs_ = ""
