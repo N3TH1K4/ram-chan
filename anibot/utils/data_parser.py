@@ -26,9 +26,9 @@ ANIME_TEMPLATE = """{name}
 {status_air}{gnrs_}{tags_}{studios}
 {hassh}
 
-🎬 {trailer_link}
-📖 <a href="{surl}">Synopsis</a>
-📖 <a href="{url}">Official Site</a>
+👾 {trailer_link}
+♻️ <a href="{surl}">Synopsis</a>
+🌐 <a href="{url}">Official Site</a>
 
 {additional}"""
 
@@ -890,9 +890,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
             in_ls_score = f" and scored {in_list['score']}" if in_list['score']!=0 else ""
             user_data = f"\n⤜ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
     if data["title"]["english"] is not None:
-        name = f"""[{c_flag}]**{romaji}**
-        __{english}__
-        {native}"""
+        name = f"""[{c_flag}]**{romaji}** __{english}__ {native}"""
     else:
         name = f"""[{c_flag}]**{romaji}**
         {native}"""
@@ -966,6 +964,7 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     # Data of all fields in returned json
     # pylint: disable=possibly-unused-variable
     idm = data.get("id")
+    synon = data.get('synonyms')
     bot = BOT_NAME.replace("@", "")
     idmal = data.get("idMal")
     romaji = data["title"]["romaji"]
