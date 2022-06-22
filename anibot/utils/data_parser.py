@@ -800,11 +800,11 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     
     if req == "desc":
         synopsis = data.get("description")
-	banner = data['bannerImage']
-	if banner == None:
+        banner = data['bannerImage']
+        if banner == None:
             banner = pic
-	else:
-	    banner = banner
+        else:
+            banner = banner
         return (banner if ctgry == "ANI" else data["image"]["large"]), synopsis
     elif req == "char":
         charlist = []
