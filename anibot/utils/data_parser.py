@@ -23,7 +23,7 @@ ANIME_TEMPLATE = """{name}
 ⤜ **IS LICENSED:** `{lice}`
 ⤜ **ADULT RATED:** `{adult}`
 ⤜ **POPULARITY:** {popp}
-{status_air}{gnrs_}{tags_}
+{status_air}{gnrs_}{tags_}{studios}
 {hassh}
 
 🎬 {trailer_link}
@@ -389,11 +389,24 @@ query ($search: String, $page: Int) {
     media (search: $search, type: ANIME) {
       id
       idMal
+      synonyms
+      coverImage{
+              extraLarge}
       title {
         romaji
         english
         native
       }
+      startDate{
+            year
+            month
+            day
+          }
+	endDate{
+            year
+            month
+            day
+            }
       format
       status
       episodes
@@ -408,7 +421,17 @@ query ($search: String, $page: Int) {
       tags {
         name
       }
+      isLicensed
+      studios{
+              nodes{
+                   name
+              }
+          }
       averageScore
+      popularity
+      bannerImage
+      season
+      hashtag
       relations {
         edges {
           node {
@@ -830,12 +853,16 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     popp = f"`{popp}` Anilist Users have This Anime In Their Lists"
     gnrs = ", ".join(data['genres'])
     score = data['averageScore']
+    studios = "\n⤜ **STUDIOS:**"
     avscd = f"\n⤜ **SCORE:** `{score}%` 🌟" if score is not None else ""
     tags = []
     for i in data['tags']:
         tags.append(i["name"])
     tags_ = f"\n⤜ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
     bot = BOT_NAME.replace("@", "")
+    for x in json['studios']['nodes']:
+        studios+= f"`{x['name']}`, "
+    studios = studios[:-2] + '\n'
     if endmonth and endday == None:
        enddate = f"The year This Anime finished was {endyr}"
     elif endyr == None:
