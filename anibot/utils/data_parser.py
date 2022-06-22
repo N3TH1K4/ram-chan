@@ -860,7 +860,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
         tags.append(i["name"])
     tags_ = f"\n⤜ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
     bot = BOT_NAME.replace("@", "")
-    for x in json['studios']['nodes']:
+    for x in data['studios']['nodes']:
         studios+= f"`{x['name']}`, "
     studios = studios[:-2] + '\n'
     if endmonth and endday == None:
