@@ -14,10 +14,17 @@ ANIME_DB, MANGA_DB, CHAR_DB = {}, {}, {}
 ANIME_TEMPLATE = """{name}
 
 **ID | MAL ID:** `{idm}` | `{idmal}`
-➤ **SOURCE:** `{source}`
-➤ **TYPE:** `{formats}`{avscd}{dura}{user_data}
-➤ **ADULT RATED:** `{adult}`
+⤜ **SYNONYMS:** `{synon}`
+⤜ **SOURCE:** `{source}`
+⤜ **TYPE:** `{formats}`{avscd}{dura}{user_data}
+⤜ **START DATE:** `{airdate}`
+⤜ **END DATE:** `{enddate}`
+⤜ **SEASON:** `{seas}`
+⤜ **IS LICENSED:** `{lice}`
+⤜ **ADULT RATED:** `{adult}`
+⤜ **POPULARITY:** {popp}
 {status_air}{gnrs_}{tags_}
+{hassh}
 
 🎬 {trailer_link}
 📖 <a href="{surl}">Synopsis</a>
@@ -31,12 +38,36 @@ query ($id: Int, $idMal:Int, $search: String) {
   Media (id: $id, idMal: $idMal, search: $search, type: ANIME) {
     id
     idMal
+    synonyms
+    coverImage{
+              extraLarge}
     title {
       romaji
       english
       native
     }
+    startDate{
+            year
+            month
+            day
+          }
+	endDate{
+            year
+            month
+            day
+            }
+    
+    isLicensed
+    studios{
+              nodes{
+                   name
+              }
+          }
+    hashtag
+    season
+    popularity
     format
+    bannerImage
     status
     episodes
     duration
@@ -306,16 +337,8 @@ query ($id: Int) {
     id
     description (asHtml: false)
     bannerImage
-  }
-}
-"""
-
-BAN_QUERY = """
-query ($id: Int) {
-  Media (id: $id) {
-    id
-    description (asHtml: false)
-    bannerImage
+    coverImage{
+              extraLarge}
   }
 }
 """
@@ -729,49 +752,40 @@ async def get_featured_in_lists(idm, req, auth: bool = False, user: int = None, 
 
 async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = None, page: int = 0):
     vars_ = {"id": int(idm)}
-    if req=='char':
-        vars_['page'] = page
+    if req=='char':	
+    	vars_['page'] = page
     result = await return_json_senpai(
-        (
-            (	
-                DES_INFO_QUERY
-                if req == "desc"
-		else BAN_QUERY
-		if req == "banner"
-                else CHA_INFO_QUERY
-                if req == "char"
-                else REL_INFO_QUERY
-		
-            )
-            if ctgry == "ANI"
-            else DESC_INFO_QUERY
-        ),
-        vars_,
+	(
+	    (
+		DES_INFO_QUERY
+		if req == "desc"
+		else CHA_INFO_QUERY
+		if req == "char"
+		else REL_INFO_QUERY
+	    )
+	    if ctgry == "ANI"
+	    else DESC_INFO_QUERY
+	),
+	vars_,
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
     pic = f"https://img.anili.st/media/{idm}"
-    banner = data.get("bannerImage")
-    bannert = "Here Is The Banner"
     if req == "desc":
         synopsis = data.get("description")
         return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
-    elif req == "desc":
-        banner = data.get("bannerImage")
-        print(banner)
-        return (banner if ctgry == "ANI" else data["image"]["large"]),bannert		
     elif req == "char":
-        charlist = []
-        for char in data["characters"]['edges']:
-            charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
-        chrctrs = ("\n").join(charlist)
-        charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
-        return pic, charls, data["characters"]['pageInfo']
+	charlist = []
+	for char in data["characters"]['edges']:
+	    charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
+	chrctrs = ("\n").join(charlist)
+	charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
+	return pic, charls, data["characters"]['pageInfo']		
     else:
-        prqlsql = data.get("relations").get("edges")
-        ps = ""
-        for i in prqlsql:
-            ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
-        return pic, ps
+	prqlsql = data.get("relations").get("edges")
+	ps = ""
+	for i in prqlsql:
+	    ps += f'• {i["node"]["title"]["romaji"]} `{i["relationType"]}`\n'
+	return pic, ps
 
 
 async def get_anime(vars_, auth: bool = False, user: int = None):
@@ -788,31 +802,56 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     # pylint: disable=possibly-unused-variable
     idm = data.get("id")
     idmal = data.get("idMal")
+    synon = data.get('synonyms')
     romaji = data["title"]["romaji"]
     english = data["title"]["english"]
     native = data["title"]["native"]
     formats = data.get("format")
     status = data.get("status")
+    syr = data['startDate']['year']	
+    smon = data['startDate']['month']
+    sday = data['startDate']['day']
+    airdate = f"{syr}.{smon}.{sday}"
     episodes = data.get("episodes")
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
     c_flag = cflag(country)
+    endyr= data['endDate']['year']
+    endmonth = data['endDate']['month']
+    endday = data['endDate']['day']
+    enddate = f"{endyr}.{endmonth}.{endday}"
+    seas= data['season']
+    hassh= data['hashtag']
+    lice = data['isLicensed']
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     url = data.get("siteUrl")
+    banner = data.get("bannerImage")
     trailer_link = "N/A"
+    popp = data['popularity']
+    popp = f"`{popp}` Anilist Users have This Anime In Their Lists"
     gnrs = ", ".join(data['genres'])
     score = data['averageScore']
-    avscd = f"\n➤ **SCORE:** `{score}%` 🌟" if score is not None else ""
+    avscd = f"\n⤜ **SCORE:** `{score}%` 🌟" if score is not None else ""
     tags = []
     for i in data['tags']:
         tags.append(i["name"])
-    tags_ = f"\n➤ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
+    tags_ = f"\n⤜ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
     bot = BOT_NAME.replace("@", "")
+    if endmonth and endday == None:
+       enddate = f"The year This Anime finished was {endyr}"
+    elif endyr == None:
+       enddate = "Its Not Even Started"
+    else:
+       enddate =enddate
+    if lice == True:
+        lice = "A licensed Work"
+    else:
+        lice = "Not licensed"
     gnrs_ = ""
     if len(gnrs)!=0:
-        gnrs_ = f"\n➤ **GENRES:** `{gnrs}`"
+        gnrs_ = f"\n⤜ **GENRES:** `{gnrs}`"
     isfav = data.get("isFavourite")
     fav = ", in Favourites" if isfav is True else ""
     user_data = ""
@@ -825,7 +864,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
             in_ls_id = in_list['id']
             in_ls_stts = in_list['status']
             in_ls_score = f" and scored {in_list['score']}" if in_list['score']!=0 else ""
-            user_data = f"\n➤ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
+            user_data = f"\n⤜ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
     if data["title"]["english"] is not None:
         name = f"""[{c_flag}]**{romaji}**
         __{english}__
@@ -855,9 +894,17 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
             sql_id = i["node"]["id"]
             break
     additional = f"{prql}{sql}"
-    surl = f"https://t.me/{bot}/?start=des_ANI_{idm}"
+
+    if smon and sday == None:
+        airdate = f"Not yet relesed Year That This Anime Gonna Relese is {syr}"
+    elif syr == None:
+         airdate ="Not Yet Announced"
+    else:
+         airdate = airdate
+		
+    surl = f"https://t.me/{bot}/?start=desc_ANI_{idm}"
     dura = (
-        f"\n➤ **DURATION:** `{duration} min/ep`"
+        f"\n⤜ **DURATION:** `{duration} min/ep`"
         if duration is not None
         else ""
     )
@@ -870,9 +917,9 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
         air_on += f" | {eps}{th} eps"
     if air_on  is None:
         eps_ = f"` | `{episodes} eps" if episodes is not None else ""
-        status_air = f"➤ **STATUS:** `{status}{eps_}`"
+        status_air = f"⤜ **STATUS:** `{status}{eps_}`"
     else:
-        status_air = f"➤ **STATUS:** `{status}`\n➤ **NEXT AIRING:** `{air_on}`"
+        status_air = f"⤜ **STATUS:** `{status}`\n⤜ **NEXT AIRING:** `{air_on}`"
     if data["trailer"] and data["trailer"]["site"] == "youtube":
         trailer_link = f"<a href='https://youtu.be/{data['trailer']['id']}'>Trailer</a>"
     title_img = f"https://img.anili.st/media/{idm}"
@@ -904,11 +951,33 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     episodes = data.get("episodes")
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
+    idm = data.get("id")
+    idmal = data.get("idMal")
+    synon = data.get('synonyms')
+    romaji = data["title"]["romaji"]
+    english = data["title"]["english"]
+    native = data["title"]["native"]
+    formats = data.get("format")
+    status = data.get("status")
+    syr = data['startDate']['year']	
+    smon = data['startDate']['month']
+    sday = data['startDate']['day']
+    airdate = f"{syr}.{smon}.{sday}"
+    episodes = data.get("episodes")
+    duration = data.get("duration")
+    country = data.get("countryOfOrigin")
+    c_flag = cflag(country)
+    source = data.get("source")
+    prqlsql = data.get("relations").get("edges")
+    adult = data.get("isAdult")
+    url = data.get("siteUrl")
+    banner = data.get("bannerImage")
     c_flag = cflag(country)
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
     trailer_link = "N/A"
+    banner = data.get("bannerImage")
     isfav = data.get("isFavourite")
     gnrs = ", ".join(data['genres'])
     gnrs_ = ""
