@@ -972,28 +972,63 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     english = data["title"]["english"]
     native = data["title"]["native"]
     formats = data.get("format")
+    syr = data['startDate']['year']	
+    smon = data['startDate']['month']
+    sday = data['startDate']['day']
+    airdate = f"{syr}.{smon}.{sday}"
     status = data.get("status")
     episodes = data.get("episodes")
     duration = data.get("duration")
     country = data.get("countryOfOrigin")
     c_flag = cflag(country)
+    endyr= data['endDate']['year']
+    endmonth = data['endDate']['month']
+    endday = data['endDate']['day']
+    enddate = f"{endyr}.{endmonth}.{endday}"
+    seas= data['season']
+    hassh= data['hashtag']
+    lice = data['isLicensed']
     source = data.get("source")
     prqlsql = data.get("relations").get("edges")
     adult = data.get("isAdult")
+    url = data.get("siteUrl")
+    popp = data['popularity']
+    popp = f"`{popp}` Anilist Users have This Anime In Their Lists"
+    banner = data.get("bannerImage")
     trailer_link = "N/A"
     isfav = data.get("isFavourite")
     gnrs = ", ".join(data['genres'])
     gnrs_ = ""
     if len(gnrs)!=0:
-        gnrs_ = f"\n➤ **GENRES:** `{gnrs}`"
+        gnrs_ = f"\n⤜ **GENRES:** `{gnrs}`"
     fav = ", in Favourites" if isfav is True else ""
     score = data['averageScore']
-    avscd = f"\n➤ **SCORE:** `{score}%` 🌟" if score is not None else ""
+    avscd = f"\n⤜ **SCORE:** `{score}%` 🌟" if score is not None else ""
+    studios = "\n⤜ **STUDIOS:**"
+    for x in data['studios']['nodes']:
+        studios+= f"`{x['name']}`, "
+    studios = studios[:-2] + '\n'
     tags = []
     for i in data['tags']:
         tags.append(i["name"])
-    tags_ = f"\n➤ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
+    tags_ = f"\n⤜ **TAGS:** `{', '.join(tags[:5])}`" if tags != [] else ""
+    if endmonth and endday == None:
+       enddate = f"The year This Anime finished was {endyr}"
+    elif endyr == None:
+       enddate = "Its Not Even Started"
+    else:
+       enddate =enddate
+    if lice == True:
+        lice = "A licensed Work"
+    else:
+        lice = "Not licensed"
     in_ls = False
+    if smon and sday == None:
+        airdate = f"Not yet relesed Year That This Anime Gonna Relese is {syr}"
+    elif syr == None:
+         airdate ="Not Yet Announced"
+    else:
+         airdate = airdate
     in_ls_id = ""
     user_data = ""
     if auth is True:
@@ -1003,7 +1038,7 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
             in_ls_id = in_list['id']
             in_ls_stts = in_list['status']
             in_ls_score = f" and scored {in_list['score']}" if in_list['score']!=0 else ""
-            user_data = f"\n➤ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
+            user_data = f"\n⤜ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
     if data["title"]["english"] is not None:
         name = f"[{c_flag}]**{english}** (`{native}`)"
     else:
@@ -1030,7 +1065,7 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
     additional = f"{prql}{sql}"
     additional.replace("-", "")
     dura = (
-        f"\n➤ **DURATION:** `{duration} min/ep`"
+        f"\n⤜ **DURATION:** `{duration} min/ep`"
         if duration is not None
         else ""
     )
@@ -1043,9 +1078,9 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
         air_on += f" | {eps}{th} eps"
     if air_on  is None:
         eps_ = f"` | `{episodes} eps" if episodes is not None else ""
-        status_air = f"➤ **STATUS:** `{status}{eps_}`"
+        status_air = f"⤜ **STATUS:** `{status}{eps_}`"
     else:
-        status_air = f"➤ **STATUS:** `{status}`\n➤ **NEXT AIRING:** `{air_on}`"
+        status_air = f"⤜ **STATUS:** `{status}`\n⤜ **NEXT AIRING:** `{air_on}`"
     if data["trailer"] and data["trailer"]["site"] == "youtube":
         trailer_link = f"<a href='https://youtu.be/{data['trailer']['id']}'>Trailer</a>"
     url = data.get("siteUrl")
