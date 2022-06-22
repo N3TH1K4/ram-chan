@@ -30,7 +30,9 @@ ANIME_TEMPLATE = """{name}
 ♻️ <a href="{surl}">Synopsis</a>
 🌐 <a href="{url}">Official Site</a>
 
-{additional}"""
+{additional}
+
+**Powered by [Anilist](https://anilist.co) API**"""
 
 # GraphQL Queries.
 ANIME_QUERY = """
@@ -336,6 +338,9 @@ query ($id: Int) {
   Media (id: $id) {
     id
     description (asHtml: false)
+    bannerImage
+    coverImage{
+      extraLarge}
   }
 }
 """
@@ -790,16 +795,20 @@ async def get_additional_info(idm, req, ctgry, auth: bool = False, user: int = N
     )
     data = result["data"]["Media"] if ctgry == "ANI" else result["data"]["Character"]
     pic = f"https://img.anili.st/media/{idm}"
+    banner = data['bannerImage']
+    if banner == None:
+        banner = pic
+    cover =  data['coverImage']['extraLarge']
     if req == "desc":
         synopsis = data.get("description")
-        return (pic if ctgry == "ANI" else data["image"]["large"]), synopsis
+        return (banner if ctgry == "ANI" else data["image"]["large"]), synopsis
     elif req == "char":
         charlist = []
         for char in data["characters"]['edges']:
             charlist.append(f"`• {char['node']['name']['full']} `({char['role']})")
         chrctrs = ("\n").join(charlist)
         charls = f"`{chrctrs}`" if len(charlist) != 0 else ""
-        return pic, charls, data["characters"]['pageInfo']
+        return cover, charls, data["characters"]['pageInfo']
     else:
         prqlsql = data.get("relations").get("edges")
         ps = ""
@@ -892,7 +901,7 @@ async def get_anime(vars_, auth: bool = False, user: int = None):
     if data["title"]["english"] is not None:
         name = f"""[{c_flag}]**{romaji}** __{english}__ {native}"""
     else:
-        name = f"""[{c_flag}]**{romaji}**
+        name = f"""{c_flag}**{romaji}**
         {native}"""
     prql, prql_id, sql, sql_id = "", "None", "", "None"
     for i in prqlsql:
@@ -1039,9 +1048,9 @@ async def get_anilist(qdb, page, auth: bool = False, user: int = None):
             in_ls_score = f" and scored {in_list['score']}" if in_list['score']!=0 else ""
             user_data = f"\n⤜ **USER DATA:** `{in_ls_stts}{fav}{in_ls_score}`"
     if data["title"]["english"] is not None:
-        name = f"[{c_flag}]**{english}** (`{native}`)"
+        name = f"{c_flag}**{english}** (`{native}`)"
     else:
-        name = f"[{c_flag}]**{romaji}** (`{native}`)"
+        name = f"{c_flag}**{romaji}** (`{native}`)"
     prql, sql = "", ""
     for i in prqlsql:
         if i["relationType"] == "PREQUEL":
